@@ -20,6 +20,10 @@ Clone/Download the repo and run either AppMaker.ps1 (GUI) or AppMaker_CLI.ps1 fo
 
 ## How to use
 
+First time? Run AppMaker_CLI.ps1, this will create two empty neccessary folders.
+
+To use AppMaker, you'll need to drop your installer script + resources in the folder "DropFilesHere" then continue below.
+
 GUI
 ```
 Run AppMaker.ps1
