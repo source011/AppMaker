@@ -16,6 +16,15 @@ $buildLocation = "$PSSCRIPTROOT\DropFilesHere"
 $outputLocation = "$PSSCRIPTROOT\COMPLETE"
 $templateLocation ="$PSSCRIPTROOT\bin"
 
+# Create folders if not already exists
+if(!(Test-Path $buildLocation)){
+	New-Item $buildLocation -Type Directory | Out-Null
+}
+if(!(Test-Path $outputLocation)){
+	New-Item $outputLocation -Type Directory | Out-Null
+}
+
+
 $installerCount = 0
 
 ##############################################################################
