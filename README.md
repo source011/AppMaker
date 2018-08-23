@@ -14,10 +14,6 @@ What you'll need to run AppMaker
 Powershell 5.1
 ```
 
-### Installing
-
-Clone/Download the repo and run either AppMaker.ps1 (GUI) or AppMaker_CLI.ps1 for command line use.
-
 ## How to use
 
 First time? Run AppMaker_CLI.ps1, this will create two empty neccessary folders.
@@ -42,7 +38,7 @@ Enter a name for your files (for example "Mozilla Firefox")
 Enter version (for example "1.33.7")
 Confirm by enter (Y/y).
 ```
-As soon as you click create AppMaker starts build your application. Whenever the job is done you'll be prompted with a success message.
+AppMaker will now start to build your application. Whenever the job is done you'll be prompted with a success message.
 
 All your created apps will be found in the folder "COMPLETE".
 
