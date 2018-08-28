@@ -1,4 +1,4 @@
-cls
+Clear-Host
 function promptMessage($message, $type){
     switch($type)
     {
@@ -11,7 +11,7 @@ function promptMessage($message, $type){
 
 # Logging
 $logPath = "$PSScriptRoot" # Log file folder in same location as the script
-$logFileName = "magicwand.log" # Log filename
+$logFileName = "AppMaker.log" # Log filename
 $logFile = "$logPath\$logFileName" # Combine LPath and LFile to make one full path
 
 if(!(Test-Path $logFile)){
@@ -43,7 +43,7 @@ Write-Host " "
 LogWrite "AppMaker started!"
 
 # Select installer if multiple
-$validFiles = @(Get-ChildItem "$($buildLocation)\*" -Include *.ps1,*.vbs,*.bat)
+$validFiles = @(Get-ChildItem "$($buildLocation)\*" -Include *.ps1,*.vbs,*.bat,*.exe,*.msi)
 $validFilesCount = 0
 $installerCount = 0
 
@@ -59,7 +59,8 @@ if($validFilesCount -gt 0){
 	}
 	
 	# Set installer
-	$appInstaller = $validFiles[$installerID]
+	$appInstaller = $validFiles[$installerID].name
+	$appExt = $validFiles[0].Extension
 	LogWrite "Selected $($validFiles[$installerID])!"
 }
 
@@ -70,7 +71,7 @@ if($appInstaller -and $installerCount -lt 2) {
     $appName = Read-Host 'App name? '
     $appVersion = Read-Host 'App version? '
  
-    cls
+    Clear-Host
 	Write-Host "===== AppMaker ====="
 	Write-Host " "
 	
@@ -80,11 +81,57 @@ if($appInstaller -and $installerCount -lt 2) {
     while(!($appVersion)){
         $appVersion = Read-Host 'App version?'
     }
+# Set installer type
+if($appExt){
+LogWrite "Found extension $appExt, setting installer type."
+    switch($appExt)
+    {
+        '.ps1' { 
+			$appInstType = "powershell.exe"
+			$appInstParam = "-file $appInstaller"
+		}
+        '.vbs' { 
+			$appInstType = "cscript.exe"
+			$appInstParam = "$appInstaller"
 
+		}
+        '.msi' { 
+			$appInstType = "msiexec.exe"
+			$appInstOption = Read-Host 'Enter MSI options (example /silent /s)'
+			$appInstParam = "/i $appInstaller $appInstOption"
+
+		}
+        '.exe' { 
+			$appInstType = "$appInstaller"
+			$appInstOption = Read-Host 'Enter EXE options (example /silent /s)'
+			$appInstParam = "$appInstOption"
+
+		}
+		'.bat' { 
+			$appInstType = "cmd.exe"
+			$appInstParam = "/c $appInstaller"
+		}
+		'.bat' { 
+			$appInstType = "cmd.exe"
+			$appInstParam = "/c $appInstaller"
+		}
+    }
+} else {
+LogWrite "No file extension detected, exiting..."
+Break
+}
+    Clear-Host
+	Write-Host "===== AppMaker ====="
+	Write-Host " "
     promptMessage "App name: $($appName)"
 	LogWrite "App name: $($appName)"
     promptMessage "App version: $($appVersion)"
 	LogWrite "App version: $($appVersion)"
+	if($appInstOption){
+    promptMessage "App options: $($appInstOption)"
+	LogWrite "App options: $($appInstOption)"
+	}
+	Write-Host " "
     $continueMW = Read-Host 'Continue? [Y/N]'
 } else {
     # Check if multiple installers exists
@@ -104,10 +151,10 @@ if($appInstaller -and $installerCount -lt 2) {
 
 
 if($continueMW -contains "Y"){
-cls
+Clear-Host
 Write-Host "===== AppMaker ====="
 Write-Host " "
-promptMessage "Please wait while creating the EXE..." "warning"
+promptMessage "Please wait while creating the EXE..." "success"
 LogWrite "Preparing job"
 Write-Host " "
 
@@ -139,7 +186,8 @@ $config = @"
 ;!@Install@!UTF-8!
 Title="$applicationName"
 Progress="no"
-RunProgram="$appInstaller"
+ExecuteFile="$appInstType"
+ExecuteParameters="$appInstParam"
 ;!@InstallEnd@!
 "@
 $config | Out-File -encoding ascii "$folderLoc\config.txt"
@@ -177,15 +225,16 @@ if(Test-Path "$folderLoc\$($applicationName)_$($applicationVersion).exe"){
 
 # If build is success prompt and exit..
 if(Test-path "$applicationPath\$($applicationName)_$($applicationVersion).exe"){
-	cls
+	Clear-Host
 	Write-Host "===== AppMaker ====="
 	Write-Host " "
     promptMessage "The app $applicationName was created successfully!" "success"
 	LogWrite "The app $applicationName was created successfully!"
+	LogWrite "=================================================="
 	Write-Host " "
     exit
 } else {
-	cls
+	Clear-Host
 	Write-Host "===== AppMaker ====="
 	Write-Host " "
     promptMessage "ERROR! Something went wrong with the build - $applicationName could not be created!" "error"
@@ -199,4 +248,3 @@ if(Test-path "$applicationPath\$($applicationName)_$($applicationVersion).exe"){
 	LogWrite "Exiting..."
 	Write-Host " "
 }
-LogWrite "=================================================="
