@@ -24,7 +24,7 @@ GUI
 ```
 Run AppMaker.ps1
 Enter a name for your files (for example "Mozilla Firefox")
-Choose installer, this could be either .bat, .vbs or .ps1.
+Choose installer, this could be either .bat, .cmd, .vbs, .ps1, .exe or .msi.
 Enter version (for example "1.33.7")
 Click "Create"
 ```
